@@ -115,12 +115,7 @@ function getChannelId() {
 
 function getStream() {
     var streamer = channel; // assumes channel has been defined in old code 
-    fetch("https://api.twitch.tv/helix/streams?user_login="+streamer, {
-        headers: {
-            "Client-ID": "<your-client-id>", 
-            "Authorization": "Bearer <your-client-secret>"
-        }
-      })
+    fetch("https://sandtwitch.vercel.app/started-at?streamer="+streamer)
         .then(res => res.json())
         .then(json => {
         // let started_at = json.data[0].started_at; 
@@ -144,7 +139,8 @@ function getStream() {
         var diffMilliseconds = null;
         //Check to see if the data actually contains a stream object
         //If not then the stream isn't live we can then make some decisions on what to do
-        if(json.data === null){
+        // console.log(json.started_at)
+        if(json.started_at === null){ 
             //If isStreamLive is true then we know that the stream was live and now it isn't
             //In that case we can go back to polling Twitch every one minute
             //And cancel the one second timer.
@@ -159,8 +155,7 @@ function getStream() {
             //If there's no data then just return, polling will continue
             return;
         } else {
-            streamCreatedDate = json.data[0].started_at;
-            // console.log(json.data[0].started_at)
+            streamCreatedDate = json.started_at; 
             isStreamLive = true;
         } 
         
@@ -203,8 +198,6 @@ function getStream() {
             //And start the longer poll to Twitch
             myTwitchPoller = setInterval(getStream, tenMinutePoll);
         } 
-
-
     }); 
 
     //This is the REST url for the streams data for my channel
@@ -379,7 +372,7 @@ function displayTime(){
     }
     
     upDateText(outputText);
-    // console.log(outputText); 
+    console.log(outputText); 
 }
 
 function parseText() {
